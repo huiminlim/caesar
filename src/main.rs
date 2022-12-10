@@ -79,6 +79,12 @@ fn main() {
 
     let mut c = Caesar::default();
     c.set_shift(4);
+
+    let now = std::time::Instant::now();
     let encrypted = c.encrypt("ATTACKATONCE");
-    println!("Encrypted message: {:?}", encrypted);
+    println!(
+        "Encrypted message: {:?}, elapsed: {} us",
+        encrypted,
+        now.elapsed().as_micros()
+    );
 }
