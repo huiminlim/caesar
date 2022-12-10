@@ -3,21 +3,11 @@
 trait Cipher {
     // Takes in a borrowed (takes no ownership of) message string
     // and returns encrypted message (and the receiver takes ownership)
-    fn encrypt(&self, msg: &str) -> String {
-        // NOTE:
-        // Default unimplemented behaviour
-        // returns original input
-        msg.to_owned()
-    }
+    fn encrypt(&self, msg: &str) -> Option<String>;
 
     // Takes in a borrowed (takes no ownership of) message string
     // and returns decrypted message (and the receiver takes ownership)
-    fn decrypt(&self, enc: &str) -> String {
-        // NOTE:
-        // Default unimplemented behaviour
-        // returns original input
-        enc.to_owned()
-    }
+    fn decrypt(&self, enc: &str) -> Option<String>;
 }
 
 struct Caesar {
@@ -39,8 +29,7 @@ impl Default for Caesar {
     }
 }
 impl Cipher for Caesar {
-    fn encrypt(&self, msg: &str) -> String {
-        // TODO: Fill in logic
+    fn encrypt(&self, msg: &str) -> Option<String> {
         let uppercase_msg = msg.to_uppercase();
         let mut chars: Vec<u32> = uppercase_msg.chars().map(|c| c as u32).collect();
         for char in &mut chars {
@@ -49,16 +38,39 @@ impl Cipher for Caesar {
             }
         }
 
-        chars
-            .iter()
-            .flat_map(|c| std::char::from_u32(*c))
-            .collect::<String>()
-            .to_owned()
+        Some(
+            chars
+                .iter()
+                .flat_map(|c| std::char::from_u32(*c))
+                .collect::<String>()
+                .to_owned(),
+        )
     }
 
-    fn decrypt(&self, enc: &str) -> String {
+    fn decrypt(&self, enc: &str) -> Option<String> {
         // TODO: Fill in logic
-        enc.to_owned()
+        Some(enc.to_owned())
+    }
+}
+
+// Write unit tests to test Caesar cipher encryption
+#[cfg(test)]
+mod caesar_test {
+
+    // Access all codes in above
+    use crate::Caesar;
+    use crate::Cipher;
+
+    #[test]
+    fn check_caesar_pass() {
+        let mut c = Caesar::default();
+        c.set_shift(7);
+
+        // Test happy case
+        let result = c.encrypt("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        let expected = String::from("HIJKLMNOPQRSTUVWXYZABCDEFG");
+        assert!(result.is_some());
+        assert_eq!(result, Some(expected));
     }
 }
 
